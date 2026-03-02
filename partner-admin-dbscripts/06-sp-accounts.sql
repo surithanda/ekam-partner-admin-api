@@ -1,0 +1,5 @@
+-- ============================================================================
+-- MOVED → See 13-sp-accounts.sql
+-- This file is kept for backward compatibility. All account SPs (3 new
+-- partner_admin_* + 4 existing eb_*) are now in 13-sp-accounts.sql.
+-- ============================================================================

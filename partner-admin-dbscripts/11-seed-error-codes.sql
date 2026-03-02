@@ -1,0 +1,153 @@
+-- ============================================================================
+-- Partner Admin — Seed Data: Error Codes (109 codes)
+-- Populates the partner_admin_error_codes table
+-- ============================================================================
+
+INSERT INTO `partner_admin_error_codes` (`error_code`, `module`, `operation`, `http_status`, `error_type`, `default_message`, `is_active`) VALUES
+-- ─── Admin Users ─────────────────────────────────────────────────────────────
+('PA_USCR_001_MISSING_FIELDS',       'admin_users', 'create', 400, 'validation',    'All required fields must be provided', 1),
+('PA_USCR_001_MISSING_USERNAME',     'admin_users', 'create', 400, 'validation',    'Username is required', 1),
+('PA_USCR_002_MISSING_PASSWORD',     'admin_users', 'create', 400, 'validation',    'Password is required', 1),
+('PA_USCR_003_MISSING_EMAIL',        'admin_users', 'create', 400, 'validation',    'Email is required', 1),
+('PA_USCR_004_MISSING_NAME',         'admin_users', 'create', 400, 'validation',    'First and last name are required', 1),
+('PA_USCR_005_MISSING_ROLE',         'admin_users', 'create', 400, 'validation',    'Role is required', 1),
+('PA_USCR_200_INVALID_ROLE',         'admin_users', 'create', 400, 'business_rule', 'Role must be account-admin or support-admin', 1),
+('PA_USCR_400_DUPLICATE_USERNAME',   'admin_users', 'create', 409, 'conflict',      'Username already exists for this partner', 1),
+('PA_USCR_401_DUPLICATE_EMAIL',      'admin_users', 'create', 409, 'conflict',      'Email already exists for this partner', 1),
+('PA_USCR_900_DB_ERROR',             'admin_users', 'create', 500, 'system',        'Database error creating admin user', 1),
+('PA_USGT_100_NOT_FOUND',            'admin_users', 'get',    404, 'not_found',     'Admin user not found', 1),
+('PA_USGT_900_DB_ERROR',             'admin_users', 'get',    500, 'system',        'Database error fetching admin user', 1),
+('PA_USLI_900_DB_ERROR',             'admin_users', 'list',   500, 'system',        'Database error listing admin users', 1),
+('PA_USRS_001_MISSING_FIELDS',       'admin_users', 'reset',  400, 'validation',    'User ID and new password are required', 1),
+('PA_USRS_002_WEAK_PASSWORD',        'admin_users', 'reset',  400, 'validation',    'Password must be at least 6 characters', 1),
+('PA_USRS_100_NOT_FOUND',            'admin_users', 'reset',  404, 'not_found',     'Admin user not found for password reset', 1),
+('PA_USRS_900_DB_ERROR',             'admin_users', 'reset',  500, 'system',        'Database error resetting password', 1),
+('PA_USTG_100_NOT_FOUND',            'admin_users', 'toggle', 404, 'not_found',     'Admin user not found for status toggle', 1),
+('PA_USTG_200_SELF_DEACTIVATE',      'admin_users', 'toggle', 400, 'business_rule', 'Cannot deactivate your own account', 1),
+('PA_USTG_900_DB_ERROR',             'admin_users', 'toggle', 500, 'system',        'Database error toggling admin user status', 1),
+('PA_USUP_001_MISSING_ID',           'admin_users', 'update', 400, 'validation',    'User ID is required', 1),
+('PA_USUP_100_NOT_FOUND',            'admin_users', 'update', 404, 'not_found',     'Admin user not found', 1),
+('PA_USUP_200_INVALID_ROLE',         'admin_users', 'update', 400, 'business_rule', 'Invalid role for update', 1),
+('PA_USUP_900_DB_ERROR',             'admin_users', 'update', 500, 'system',        'Database error updating admin user', 1),
+-- ─── Audit ───────────────────────────────────────────────────────────────────
+('PA_ALCR_900_DB_ERROR',             'audit', 'create', 500, 'system', 'Database error inserting audit log', 1),
+('PA_ALLI_900_DB_ERROR',             'audit', 'list',   500, 'system', 'Database error fetching audit logs', 1),
+-- ─── Auth ────────────────────────────────────────────────────────────────────
+('PA_AUGT_100_API_KEY_NOT_FOUND',    'auth', 'get',    401, 'not_found',     'API key not found', 1),
+('PA_AUGT_101_USER_NOT_FOUND',       'auth', 'get',    404, 'not_found',     'User not found', 1),
+('PA_AUGT_900_DB_ERROR',             'auth', 'get',    500, 'system',        'Database error during auth lookup', 1),
+('PA_AULI_900_DB_ERROR',             'auth', 'list',   500, 'system',        'Database error fetching domains', 1),
+('PA_AULG_001_MISSING_CREDENTIALS',  'auth', 'login',  400, 'validation',    'Username, password and API key are required', 1),
+('PA_AULG_100_INVALID_API_KEY',      'auth', 'login',  401, 'not_found',     'Invalid API key', 1),
+('PA_AULG_200_API_CLIENT_INACTIVE',  'auth', 'login',  403, 'business_rule', 'API client is inactive', 1),
+('PA_AULG_201_NO_PARTNER_LINKED',    'auth', 'login',  403, 'business_rule', 'No partner linked to this API key', 1),
+('PA_AULG_202_INVALID_CREDENTIALS',  'auth', 'login',  401, 'business_rule', 'Invalid credentials', 1),
+('PA_AULG_900_DB_ERROR',             'auth', 'login',  500, 'system',        'Database error during login', 1),
+('PA_AUUP_900_DB_ERROR',             'auth', 'update', 500, 'system',        'Database error updating last login', 1),
+-- ─── Background Check ────────────────────────────────────────────────────────
+('PA_BCCR_900_DB_ERROR',             'background_check', 'create',   500, 'system',        'Database error logging background check', 1),
+('PA_BCGT_001_MISSING_PROFILE_ID',   'background_check', 'get',      400, 'validation',    'Profile ID is required', 1),
+('PA_BCGT_100_NOT_FOUND',            'background_check', 'get',      404, 'not_found',     'Profile not found for background check', 1),
+('PA_BCGT_300_ACCESS_DENIED',        'background_check', 'get',      403, 'access_denied', 'Profile does not belong to this partner', 1),
+('PA_BCGT_900_DB_ERROR',             'background_check', 'get',      500, 'system',        'Database error fetching profile for check', 1),
+('PA_BCIN_001_MISSING_FIELDS',       'background_check', 'initiate', 400, 'validation',    'Profile ID and check type are required', 1),
+('PA_BCIN_100_NOT_FOUND',            'background_check', 'initiate', 404, 'not_found',     'Profile not found', 1),
+('PA_BCIN_300_ACCESS_DENIED',        'background_check', 'initiate', 403, 'access_denied', 'Profile does not belong to this partner', 1),
+('PA_BCIN_900_DB_ERROR',             'background_check', 'initiate', 500, 'system',        'Database error initiating background check', 1),
+-- ─── Brand Config ────────────────────────────────────────────────────────────
+('PA_BRGT_900_DB_ERROR',             'brand_config', 'get',    500, 'system', 'Database error fetching brand config', 1),
+('PA_BRUP_900_DB_ERROR',             'brand_config', 'upsert', 500, 'system', 'Database error updating brand config', 1),
+-- ─── Dashboard ───────────────────────────────────────────────────────────────
+('PA_DAGT_001_MISSING_PARTNER_ID',   'dashboard', 'get',  400, 'validation', 'Partner ID is required', 1),
+('PA_DAGT_900_DB_ERROR',             'dashboard', 'get',  500, 'system',     'Database error fetching dashboard metrics', 1),
+('PA_DAGT_901_DB_ERROR',             'dashboard', 'get',  500, 'system',     'Database error fetching payment metrics', 1),
+('PA_DAGT_902_DB_ERROR',             'dashboard', 'get',  500, 'system',     'Database error fetching activity metrics', 1),
+('PA_DAGT_903_DB_ERROR',             'dashboard', 'get',  500, 'system',     'Database error fetching profile views metrics', 1),
+('PA_DAGT_904_DB_ERROR',             'dashboard', 'get',  500, 'system',     'Database error fetching account metrics', 1),
+('PA_DALI_900_DB_ERROR',             'dashboard', 'list', 500, 'system',     'Database error fetching recent activities', 1),
+-- ─── Middleware ───────────────────────────────────────────────────────────────
+('PA_MWAU_001_NO_TOKEN',             'middleware', 'auth', 401, 'validation',    'No authorization token provided', 1),
+('PA_MWAU_002_INVALID_TOKEN',        'middleware', 'auth', 403, 'validation',    'Token is invalid or expired', 1),
+('PA_MWAU_003_NO_API_KEY',           'middleware', 'auth', 401, 'validation',    'No API key provided', 1),
+('PA_MWAU_004_INVALID_API_KEY',      'middleware', 'auth', 401, 'auth',          'Invalid API key', 1),
+('PA_MWAU_300_INSUFFICIENT_ROLE',    'middleware', 'auth', 403, 'access_denied', 'Insufficient role for this resource', 1),
+-- ─── Partner ─────────────────────────────────────────────────────────────────
+('PA_PNGT_100_NOT_FOUND',            'partner', 'get',  404, 'not_found', 'Partner not found', 1),
+('PA_PNGT_900_DB_ERROR',             'partner', 'get',  500, 'system',    'Database error fetching partner info', 1),
+('PA_PNGT_901_DB_ERROR',             'partner', 'get',  500, 'system',    'Database error fetching partner by API client', 1),
+('PA_PNGT_902_DB_ERROR',             'partner', 'get',  500, 'system',    'Database error fetching partner domain links', 1),
+('PA_PNLI_900_DB_ERROR',             'partner', 'list', 500, 'system',    'Database error listing partners', 1),
+('PA_PNLI_901_DB_ERROR',             'partner', 'list', 500, 'system',    'Database error listing countries', 1),
+('PA_PNLI_902_DB_ERROR',             'partner', 'list', 500, 'system',    'Database error listing states', 1),
+-- ─── Profiles (get/read) ─────────────────────────────────────────────────────
+('PA_PFGT_100_NOT_FOUND',            'profiles', 'get', 404, 'not_found',     'Profile not found', 1),
+('PA_PFGT_300_ACCESS_DENIED',        'profiles', 'get', 403, 'access_denied', 'Profile does not belong to this partner', 1),
+('PA_PFGT_900_DB_ERROR',             'profiles', 'get', 500, 'system',        'Database error fetching profile', 1),
+('PA_PFGT_901_DB_ERROR',             'profiles', 'get', 500, 'system',        'Database error fetching full profile', 1),
+('PA_PFGT_902_DB_ERROR',             'profiles', 'get', 500, 'system',        'Database error fetching profile address', 1),
+('PA_PFGT_903_DB_ERROR',             'profiles', 'get', 500, 'system',        'Database error fetching profile education', 1),
+('PA_PFGT_904_DB_ERROR',             'profiles', 'get', 500, 'system',        'Database error fetching profile employment', 1),
+('PA_PFGT_905_DB_ERROR',             'profiles', 'get', 500, 'system',        'Database error fetching profile family', 1),
+('PA_PFGT_906_DB_ERROR',             'profiles', 'get', 500, 'system',        'Database error fetching profile photos', 1),
+('PA_PFGT_907_DB_ERROR',             'profiles', 'get', 500, 'system',        'Database error fetching profile lifestyle', 1),
+('PA_PFGT_908_DB_ERROR',             'profiles', 'get', 500, 'system',        'Database error fetching profile hobbies', 1),
+('PA_PFGT_909_DB_ERROR',             'profiles', 'get', 500, 'system',        'Database error fetching profile property', 1),
+('PA_PFGT_910_DB_ERROR',             'profiles', 'get', 500, 'system',        'Database error fetching lookup values', 1),
+('PA_PFGT_911_DB_ERROR',             'profile',  'get', 500, 'system',        'Database error fetching profile favorites', 1),
+('PA_PFGT_912_DB_ERROR',             'profile',  'get', 500, 'system',        'Database error fetching profile views', 1),
+('PA_PFGT_913_DB_ERROR',             'profile',  'get', 500, 'system',        'Database error fetching gender lookups', 1),
+-- ─── Profiles (create) ──────────────────────────────────────────────────────
+('PA_PFCR_001_MISSING_FIRST_NAME',   'profiles', 'create', 400, 'validation', 'First name is required', 1),
+('PA_PFCR_002_MISSING_LAST_NAME',    'profiles', 'create', 400, 'validation', 'Last name is required', 1),
+('PA_PFCR_003_MISSING_EMAIL',        'profiles', 'create', 400, 'validation', 'Email is required', 1),
+('PA_PFCR_004_MISSING_PHONE',        'profiles', 'create', 400, 'validation', 'Phone number is required', 1),
+('PA_PFCR_005_MISSING_GENDER',       'profiles', 'create', 400, 'validation', 'Gender is required', 1),
+('PA_PFCR_006_MISSING_BIRTH_DATE',   'profiles', 'create', 400, 'validation', 'Birth date is required', 1),
+('PA_PFCR_007_INVALID_BIRTH_DATE',   'profiles', 'create', 400, 'validation', 'Birth date cannot be in the future', 1),
+('PA_PFCR_400_DUPLICATE_EMAIL',      'profiles', 'create', 409, 'conflict',   'Email already exists', 1),
+('PA_PFCR_401_DUPLICATE_PHONE',      'profiles', 'create', 409, 'conflict',   'Phone number already exists', 1),
+('PA_PFCR_900_DB_ERROR',             'profiles', 'create', 500, 'system',     'Database error creating profile', 1),
+('PA_PFCR_901_ACCOUNT_CREATE_FAILED','profiles', 'create', 500, 'system',     'Failed to create account', 1),
+('PA_PFCR_902_PROFILE_CREATE_FAILED','profiles', 'create', 500, 'system',     'Failed to create profile personal', 1),
+('PA_PFCR_903_LOGIN_CREATE_FAILED',  'profiles', 'create', 500, 'system',     'Failed to create login', 1),
+-- ─── Profiles (list) ────────────────────────────────────────────────────────
+('PA_PFLI_900_DB_ERROR',             'profiles', 'list', 500, 'system', 'Database error listing profiles', 1),
+('PA_PFLI_901_DB_ERROR',             'profiles', 'list', 500, 'system', 'Database error listing all lookups', 1),
+-- ─── Profiles (toggle) ──────────────────────────────────────────────────────
+('PA_PFTG_100_NOT_FOUND',            'profiles', 'toggle', 404, 'not_found',     'Profile not found for status toggle', 1),
+('PA_PFTG_300_ACCESS_DENIED',        'profiles', 'toggle', 403, 'access_denied', 'Profile does not belong to this partner', 1),
+('PA_PFTG_900_DB_ERROR',             'profiles', 'toggle', 500, 'system',        'Database error toggling profile status', 1),
+-- ─── Profiles (update) ──────────────────────────────────────────────────────
+('PA_PFUP_001_MISSING_PROFILE_ID',   'profile',  'update', 400, 'validation',    'Profile ID is required', 1),
+('PA_PFUP_100_NOT_FOUND',            'profiles', 'update', 404, 'not_found',     'Profile not found', 1),
+('PA_PFUP_300_ACCESS_DENIED',        'profiles', 'update', 403, 'access_denied', 'Profile does not belong to this partner', 1),
+('PA_PFUP_900_DB_ERROR',             'profiles', 'update', 500, 'system',        'Database error updating profile', 1),
+-- ─── Accounts (get/read) ────────────────────────────────────────────────────
+('PA_ACGT_100_NOT_FOUND',            'accounts', 'get', 404, 'not_found',     'Account not found', 1),
+('PA_ACGT_300_ACCESS_DENIED',        'accounts', 'get', 403, 'access_denied', 'Account does not belong to this partner', 1),
+('PA_ACGT_900_DB_ERROR',             'accounts', 'get', 500, 'system',        'Database error fetching account', 1),
+-- ─── Accounts (list) ───────────────────────────────────────────────────────
+('PA_ACLI_900_DB_ERROR',             'accounts', 'list', 500, 'system',       'Database error listing accounts', 1),
+-- ─── Accounts (create) ─────────────────────────────────────────────────────
+('PA_ACCR_900_DB_ERROR',             'accounts', 'create', 500, 'system',     'Database error creating account', 1),
+-- ─── Accounts (update) ─────────────────────────────────────────────────────
+('PA_ACUP_100_NOT_FOUND',            'accounts', 'update', 404, 'not_found',     'Account not found for update', 1),
+('PA_ACUP_300_ACCESS_DENIED',        'accounts', 'update', 403, 'access_denied', 'Account does not belong to this partner', 1),
+-- ─── Accounts (toggle) ─────────────────────────────────────────────────────
+('PA_ACTG_100_NOT_FOUND',            'accounts', 'toggle', 404, 'not_found',     'Account not found for status toggle', 1),
+('PA_ACTG_300_ACCESS_DENIED',        'accounts', 'toggle', 403, 'access_denied', 'Account does not belong to this partner', 1),
+-- ─── Accounts (delete) ─────────────────────────────────────────────────────
+('PA_ACDL_001_NOT_FOUND',            'accounts', 'delete', 404, 'not_found',     'Account not found or already deleted', 1),
+('PA_ACDL_300_ACCESS_DENIED',        'accounts', 'delete', 403, 'access_denied', 'Account does not belong to this partner', 1),
+('PA_ACDL_900_DB_ERROR',             'accounts', 'delete', 500, 'system',        'Database error deleting account', 1),
+-- ─── System ──────────────────────────────────────────────────────────────────
+('PA_SY00_900_DB_CONNECTION',        'system', 'general', 500, 'system', 'Database connection failed', 1),
+('PA_SY00_901_DB_TIMEOUT',           'system', 'general', 500, 'system', 'Database query timeout', 1),
+('PA_SY00_999_UNKNOWN',              'system', 'general', 500, 'system', 'Internal server error', 1)
+ON DUPLICATE KEY UPDATE
+  `module` = VALUES(`module`),
+  `operation` = VALUES(`operation`),
+  `http_status` = VALUES(`http_status`),
+  `error_type` = VALUES(`error_type`),
+  `default_message` = VALUES(`default_message`),
+  `is_active` = VALUES(`is_active`);
