@@ -1,6 +1,6 @@
 # EKam Partner Admin — Implemented Features
 
-> **Last Updated**: February 27, 2026
+> **Last Updated**: March 9, 2026
 > **Deployment**: Dev/Test → Vercel | Production → Azure
 > - **API**: https://ekam-admin-api.vercel.app
 > - **UI**: https://ekam-admin-ui.vercel.app
@@ -381,16 +381,131 @@ All sections loaded in parallel, displayed in a single print-friendly layout:
 
 ---
 
+## 12. Address Verification Service (Phases 1–3)
+
+### Architecture
+
+Unified multi-provider service with fallback and in-memory TTL caching.
+
+```
+services/addressVerification/
+├── index.js                    # Unified service — provider routing, cache, fallback
+├── addressCache.js             # In-memory TTL cache (24h default)
+└── providers/
+    └── geoapifyProvider.js     # Geoapify Geocoding + Autocomplete API
+controllers/addressController.js
+routes/addressRoutes.js
+config/addressProviders.js      # Provider keys, priority, enable/disable, timeouts
+```
+
+### Provider Interface
+
+Each provider implements a standard interface:
+
+```javascript
+{
+  lookupByZip(zip, country)     → [{ city, state, country }]
+  lookupByCity(city, country)   → [{ state, country }]
+  verifyAddress(address)        → { verified, confidence, standardized_address, corrections, provider }
+  autocomplete(query, country)  → [{ address_line1, address_line2, city, state, zip, country }]
+}
+```
+
+**Fallback**: Providers tried in priority order; on failure (timeout, rate limit, error), falls back to next.
+**Caching**: All results cached in-memory with configurable TTL. Empty results are not cached.
+
+### API Endpoints (`/api/address`)
+
+| Endpoint | Description | Roles |
+|----------|-------------|-------|
+| `POST /address/lookup-by-zip` | ZIP → city/state lookup | All |
+| `POST /address/lookup-by-city` | City → state(s) lookup | All |
+| `POST /address/verify` | Full address verification — returns standardized address, confidence score, corrections | All |
+| `POST /address/autocomplete` | Partial address → suggestions (debounced, min 3 chars) | All |
+
+### Verification Response
+
+```json
+{
+  "verified": true,
+  "confidence": "high",
+  "standardized_address": {
+    "address_line1": "123 Main St",
+    "city": "Springfield",
+    "state": "IL",
+    "zip": "62704",
+    "country": "US"
+  },
+  "corrections": [
+    { "field": "zip", "original": "62700", "corrected": "62704" }
+  ],
+  "provider": "geoapify"
+}
+```
+
+Confidence levels: `high` (≥0.8), `medium` (≥0.5), `low` (<0.5). Address is `verified: true` when confidence score ≥ 0.5.
+
+### Error Codes
+
+| Error Code | HTTP | Description |
+|------------|------|-------------|
+| `PA_AVLK_001_INVALID_ZIP` | 400 | Invalid or missing ZIP code (min 3 chars) |
+| `PA_AVLK_002_INVALID_CITY` | 400 | Invalid or missing city name (min 3 chars) |
+| `PA_AVLK_003_NO_RESULTS` | 404 | No matching results found |
+| `PA_AVVR_001_INVALID_ADDRESS` | 400 | Required address fields missing |
+| `PA_AVVR_002_PROVIDER_UNAVAILABLE` | 503 | All providers unavailable |
+| `PA_AVVR_003_VERIFICATION_FAILED` | 422 | Address could not be verified |
+| `PA_AVAC_001_QUERY_TOO_SHORT` | 400 | Autocomplete query below 3 chars |
+
+**SQL Script**: `partner-admin-dbscripts/address_error_codes.sql`
+
+### Frontend Integration
+
+#### `useAddressAutocomplete` Hook (`src/lib/useAddressAutocomplete.ts`)
+- Debounced API calls (300ms default, configurable)
+- AbortController-based request cancellation
+- Returns `{ suggestions, loading, fetchSuggestions, clearSuggestions }`
+- Helper functions: `lookupByZip()`, `verifyAddress()`
+
+#### `AddressForm.tsx` — Enhanced with 3 Features
+
+| Feature | Behavior |
+|---------|----------|
+| **Autocomplete dropdown** | Address Line 1 input triggers debounced autocomplete; dropdown shows suggestions with MapPin icon, address + city/state/zip; selecting fills all fields |
+| **ZIP auto-populate** | Entering 5+ digit ZIP triggers debounced `lookupByZip`; auto-fills city + state fields |
+| **Verify-on-save** | On Save, if all fields present, calls `verifyAddress` first; if corrections found, shows amber confirmation dialog with field-by-field diff (original → corrected), confidence level, and Accept/Skip buttons |
+
+#### API Client Methods (`src/lib/api.ts`)
+- `api.addressAutocomplete(query, country)`
+- `api.addressLookupByZip(zip, country)`
+- `api.addressLookupByCity(city, country)`
+- `api.addressVerify(address)`
+
+### Tests
+
+| Layer | File | Test Count |
+|-------|------|------------|
+| **Geoapify Provider** | `tests/unit/services/geoapifyProvider.test.mjs` | 20 tests (lookupByZip 4, lookupByCity 4, verifyAddress 7, autocomplete 5) |
+| **Unified Service** | `tests/unit/services/addressService.test.mjs` | 14 tests (lookupByZip 3, lookupByCity 3, verifyAddress 3, autocomplete 4, getEnabledProviders 1) |
+| **Controller** | `tests/unit/controllers/addressController.test.mjs` | 14 tests (lookupByZip 3, lookupByCity 3, verifyAddress 4, autocomplete 4) |
+| **Integration** | `tests/integration/address.test.mjs` | 24 tests (lookupByZip 5, lookupByCity 5, verify 8, autocomplete 6) |
+| **Total** | | **72 address tests** |
+
+**Requirements Doc**: `requirements/addressverification_doc.md`
+
+---
+
 ## Summary Statistics
 
 | Category | Count |
 |----------|-------|
-| **API Endpoints (Total)** | 86 |
+| **API Endpoints (Total)** | 90 |
 | **Profile CRUD Endpoints** | 55 |
 | **Background Check Endpoints** | 7 |
 | **Database Scripts** | 18 SQL files |
 | **UI Pages** | 14 |
 | **UI Components (Profile)** | 15 form components (incl. BackgroundCheckForm) |
+| **Address Verification Tests** | 72 (unit + integration) |
 | **Stored Procedures Used** | 55+ (eb_* + partner_admin_*) |
 | **Lookup Categories** | 17+ cached categories |
 
@@ -406,7 +521,7 @@ All sections loaded in parallel, displayed in a single print-friendly layout:
 | UI (Production) | Azure | TBD |
 
 ### Environment Variables
-**API**: `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_PORT`, `JWT_SECRET`, `CORS_ORIGIN`, `AZURE_STORAGE_CONNECTION_STRING`, `AZURE_STORAGE_CONTAINER`
+**API**: `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_PORT`, `JWT_SECRET`, `CORS_ORIGIN`, `AZURE_STORAGE_CONNECTION_STRING`, `AZURE_STORAGE_CONTAINER`, `ADDRESS_GEOAPIFY_API_KEY`, `ADDRESS_PROVIDER_PRIORITY`, `ADDRESS_CACHE_TTL`, `ADDRESS_PROVIDER_TIMEOUT`
 **UI**: `NEXT_PUBLIC_API_URL`
 
 ---
