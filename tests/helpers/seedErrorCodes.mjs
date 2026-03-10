@@ -46,6 +46,14 @@ const TEST_ERROR_CODES = [
   { error_code: 'PA_USRS_001_MISSING_FIELDS',         http_status: 400, error_type: 'validation', default_message: 'User ID and new password are required' },
   { error_code: 'PA_USRS_002_WEAK_PASSWORD',           http_status: 400, error_type: 'validation', default_message: 'Password must be at least 6 characters' },
   { error_code: 'PA_USRS_100_NOT_FOUND',              http_status: 404, error_type: 'not_found', default_message: 'Admin user not found for password reset' },
+  // Address Verification
+  { error_code: 'PA_AVLK_001_INVALID_ZIP',            http_status: 400, error_type: 'validation', default_message: 'Invalid or missing ZIP code (minimum 3 characters)' },
+  { error_code: 'PA_AVLK_002_INVALID_CITY',           http_status: 400, error_type: 'validation', default_message: 'Invalid or missing city name (minimum 3 characters)' },
+  { error_code: 'PA_AVLK_003_NO_RESULTS',             http_status: 404, error_type: 'not_found', default_message: 'No matching results found for the given address lookup' },
+  { error_code: 'PA_AVVR_002_PROVIDER_UNAVAILABLE',   http_status: 503, error_type: 'system', default_message: 'Address verification service is temporarily unavailable' },
+  { error_code: 'PA_AVAC_001_QUERY_TOO_SHORT',        http_status: 400, error_type: 'validation', default_message: 'Address query must be at least 3 characters' },
+  { error_code: 'PA_AVVR_001_INVALID_ADDRESS',       http_status: 400, error_type: 'validation', default_message: 'Required address fields missing (address_line1, city, state, zip are required)' },
+  { error_code: 'PA_AVVR_003_VERIFICATION_FAILED',   http_status: 422, error_type: 'business_rule', default_message: 'Address could not be verified' },
   // System
   { error_code: 'PA_SY00_999_UNKNOWN',                http_status: 500, error_type: 'system', default_message: 'Internal server error' },
 ];
